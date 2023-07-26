@@ -1,0 +1,16 @@
+{
+  "image": "ghcr.io/poertsch/robotframeworkdockerimage:latest",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "d-biehl.robotcode",
+        "ms-vscode.live-server",
+        "ms-azuretools.vscode-docker"
+      ],
+      "settings": {
+        "workbench.colorTheme": "Default Dark+",
+        "editor.accessibilitySupport": "off"
+      }
+    }
+  }
+}
