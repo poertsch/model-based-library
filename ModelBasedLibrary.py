@@ -7,36 +7,22 @@ from robot.running import TestSuite
 @library(scope='SUITE', version='0.1.0')
 class ModelBasedLibrary(ListenerV3):
 
-    def __init__(self):
+    def __init__(self, model: str = None, *args: str):
         print('Instance created')
 
-    ALL_SUITES = {'...': TestSuite()}
-    MODEL: str = None
         
 
     def start_suite(self, data, result):
         print('Start suite ' + data.longname)
-        ModelBasedLibrary.ALL_SUITES[data.longname] = data
-        print(ModelBasedLibrary.ALL_SUITES)
+        missingKW = data.resource.keywords.create(name='keyword 2', args=['${arg1}, ${arg2}'])
+        missingKW.body.create_keyword(name='Log', args=['You called the automatically generated keyword ' + 'keyword 1' 
+                                                        + ' which is missing in the resource files', 'WARN'])
         
 
     def start_test(self, data, result):
-        if(ModelBasedLibrary.MODEL != None):
-            print('Starting test ' + data.longname)
-            print('Available keywords:')
-            for keyword in ModelBasedLibrary.ALL_SUITES[data.parent.longname].resource.keywords:
-                print(keyword)
-        
-        
+        print('Starting test ' + data.longname)
 
-    @keyword('Setup model')
-    def setupModel(self, model: str):
-        print('*CONSOLE* Model: ' + model)
-        ModelBasedLibrary.MODEL = model
-
-    @keyword('Teardown model')
-    def teardwonModel(self):
-        ModelBasedLibrary.MODEL = None
+        
 
     @keyword('Run model based test')
     def runModel(self, path: str):
@@ -45,5 +31,4 @@ class ModelBasedLibrary(ListenerV3):
 
 
     def end_suite(self, data, result):
-        ModelBasedLibrary.ALL_SUITES.pop(data.longname)
-        print(ModelBasedLibrary.ALL_SUITES)
+        pass

@@ -1,7 +1,5 @@
 *** Settings ***
-Library               ../ModelBasedLibrary.py
-Suite Setup           Setup model    model.json
-Suite Teardown        Teardown model
+Library               ../ModelBasedLibrary.py    tests/model.json    tests/path.json
 
 
 *** Test Cases ***
