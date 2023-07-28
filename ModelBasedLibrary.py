@@ -24,15 +24,17 @@ def processModelBasedSuite(suite: TestSuite, testNames, model):
         # append the json object to the list
         model_list = [json.loads(line) for line in f]
     
-
     missingKeywordNames = collectNamesForMissingKeywords(suite, model_list)
         
     for testName, pathName in testNames.items():
-            # read the json file path.json
         parentPathName = str(suite.source.parent.absolute())
+        # extract the path from the path json file
         path_list = extractPathList(pathName, parentPathName)
+
         curTest = findTestByName(suite, testName)
 
+        #for each element in the path call the keyword
+        #if the keyword does not exist, generate one and log a WARNING
         for path in path_list:
             addKeywordToTestAndResources(suite, missingKeywordNames, curTest, path)
 
@@ -64,6 +66,7 @@ def addKeywordToTestAndResources(suite, missingKeywordNames, curTest, path):
                                                                 + ' which is missing in the resource files', 'WARN'])
         missingKeywordNames.remove(kw)
 
+
 def extractPathList(pathName, parentPathName):
     with open(parentPathName + '/' + pathName) as f:
             # read the file line by line
@@ -72,11 +75,13 @@ def extractPathList(pathName, parentPathName):
         path_list = [json.loads(line) for line in f]
     return path_list
 
+
 def findTestByName(suite, testName):
     for test in suite.tests:
         if(test.name == testName):
             curTest = test
     return curTest
+
 
 def collectNamesForMissingKeywords(suite, model_list):
     missingKeywordNames = []
