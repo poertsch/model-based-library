@@ -24,10 +24,63 @@ def processModelBasedSuite(suite: TestSuite, testNames, model):
         # append the json object to the list
         model_list = [json.loads(line) for line in f]
     
-    missingKeywordNames = []
 
-    for model in model_list[0]['models']:
+    missingKeywordNames = collectNamesForMissingKeywords(suite, model_list)
         
+    for testName, pathName in testNames.items():
+            # read the json file path.json
+        parentPathName = str(suite.source.parent.absolute())
+        path_list = extractPathList(pathName, parentPathName)
+        curTest = findTestByName(suite, testName)
+
+        for path in path_list:
+            addKeywordToTestAndResources(suite, missingKeywordNames, curTest, path)
+
+
+
+def addKeywordToTestAndResources(suite, missingKeywordNames, curTest, path):
+    kw = path['currentElementName']
+    dataList = path['data']
+    kw_args = []
+    kw_argNames = []
+
+            # Add Keyword with Arguments to Test Case
+    for data in dataList:
+                # each data is a dictionary
+                # get the key and value of the dictionary
+        for key, value in data.items():
+            if key != 'JsonContext':
+                        # print(key)
+                        # print(value)
+                kw_args.append(f'{key}={value}')
+                kw_argNames.append(f'${{{key}}}')
+
+    curTest.body.create_keyword(name=kw, args=kw_args)
+            
+            # If keyword is missing in resource files, also add keyword
+    if(missingKeywordNames.count(kw) > 0):
+        missingKW = suite.resource.keywords.create(name=kw, args=kw_argNames)
+        missingKW.body.create_keyword(name='Log', args=['You called the automatically generated keyword ' + kw 
+                                                                + ' which is missing in the resource files', 'WARN'])
+        missingKeywordNames.remove(kw)
+
+def extractPathList(pathName, parentPathName):
+    with open(parentPathName + '/' + pathName) as f:
+            # read the file line by line
+            # read each line as a json object
+            # append the json object to the list
+        path_list = [json.loads(line) for line in f]
+    return path_list
+
+def findTestByName(suite, testName):
+    for test in suite.tests:
+        if(test.name == testName):
+            curTest = test
+    return curTest
+
+def collectNamesForMissingKeywords(suite, model_list):
+    missingKeywordNames = []
+    for model in model_list[0]['models']:
         foundKeywordNames = []
         
         for key in suite.resource.keywords:
@@ -48,54 +101,12 @@ def processModelBasedSuite(suite: TestSuite, testNames, model):
                 missingKeywordNames.append(edge['name'])
                 
                 
-        print("Missing keywords:")
+        
         missingKeywordNames = (list(dict.fromkeys(missingKeywordNames)))
-        for name in missingKeywordNames:
-            print(name)
-        
-        print()
-        print()
+    return missingKeywordNames
 
-    for testName, pathName in testNames.items():
-            # read the json file path.json
-        with open(str(suite.source.parent.absolute()) + '/' + pathName) as f:
-            # read the file line by line
-            # read each line as a json object
-            # append the json object to the list
-            path_list = [json.loads(line) for line in f]
 
-        
-        for test in suite.tests:
-            if(test.name == testName):
-                curTest = test
-
-        for path in path_list:
-            # print(path['modelName'])
-            # print(path['currentElementName'])
-            kw = path['currentElementName']
-            kw_args = []
-            kw_argNames = []
-
-            # Add Keyword with Arguments to Test Case
-            for data in path['data']:
-                # each data is a dictionary
-                # get the key and value of the dictionary
-                for key, value in data.items():
-                    if key != 'JsonContext':
-                        # print(key)
-                        # print(value)
-                        kw_args.append(f'{key}={value}')
-                        kw_argNames.append(f'${{{key}}}')
-
-            curTest.body.create_keyword(name=kw, args=kw_args)
-            
-            # If keyword is missing in resource files, also add keyword
-            if(missingKeywordNames.count(kw) > 0):
-                missingKW = suite.resource.keywords.create(name=kw, args=kw_argNames)
-                missingKW.body.create_keyword(name='Log', args=['You called the automatically generated keyword ' + kw 
-                                                                + ' which is missing in the resource files', 'WARN'])
-                missingKeywordNames.remove(kw)
-
+############### run the suite #####################
 
 root = TestSuite.from_file_system('tests/')
 
