@@ -1,11 +1,18 @@
 *** Settings ***
-Library               ../ModelBasedLibrary.py    tests/model.json    tests/path.json
+Metadata    foo                  bar
+Metadata    ModelBasedTests      model.json
+Metadata    Testing path 1       path.json
+Metadata    Testing path 2       path.json
 
 
 *** Test Cases ***
 
-My first model based test
-    Run model based test    path.json
+Testing path 1
+    [Documentation]        asdf
+    Log    No operation
+
+Testing path 2
+    Log    No operation
 
 
 *** Keywords ***
