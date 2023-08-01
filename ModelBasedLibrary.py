@@ -1,7 +1,14 @@
 from robot.api import TestSuite, ResultWriter
+from robot.running.model import ResourceFile
 import json
 
 def prepareSuite(suite: TestSuite):
+    print(f'Prepare Suite: {suite.longname}')
+    print()
+    for suiteImport in suite.resource.imports:
+        print(f'Import: {suiteImport}')
+    print(f'Available keywords: {suite.resource.keywords}')
+    print()
     isModelBased = False
     model = ''
     testNames = {}
@@ -15,6 +22,10 @@ def prepareSuite(suite: TestSuite):
             model = fileName
     if(isModelBased):
         processModelBasedSuite(suite, testNames, model)
+
+    for childSuite in suite.suites:
+        prepareSuite(childSuite)
+
 
 def processModelBasedSuite(suite: TestSuite, testNames, model):
     # read the json file model.json
@@ -37,6 +48,7 @@ def processModelBasedSuite(suite: TestSuite, testNames, model):
         #if the keyword does not exist, generate one and log a WARNING
         for path in path_list:
             addKeywordToTestAndResources(suite, missingKeywordNames, curTest, path)
+        missingKeywordNames = []
 
 
 
@@ -61,10 +73,15 @@ def addKeywordToTestAndResources(suite, missingKeywordNames, curTest, path):
             
             # If keyword is missing in resource files, also add keyword
     if(missingKeywordNames.count(kw) > 0):
+        print(f'Missing keyword: {kw}')
+        print()
         missingKW = suite.resource.keywords.create(name=kw, args=kw_argNames)
         missingKW.body.create_keyword(name='Log', args=['You called the automatically generated keyword ' + kw 
-                                                                + ' which is missing in the resource files', 'WARN'])
+                                                                + ' which is missing in the resource files', 'INFO'])
         missingKeywordNames.remove(kw)
+    # else:
+    #     print(f'Available keyword: {kw}')
+    #     print()
 
 
 def extractPathList(pathName, parentPathName):
@@ -83,13 +100,23 @@ def findTestByName(suite, testName):
     return curTest
 
 
-def collectNamesForMissingKeywords(suite, model_list):
+def collectNamesForMissingKeywords(suite: TestSuite, model_list):
     missingKeywordNames = []
     for model in model_list[0]['models']:
         foundKeywordNames = []
         
         for key in suite.resource.keywords:
             foundKeywordNames.append(key.name)
+
+        for suiteImport in suite.resource.imports.to_dicts():
+            print('Imports')
+            print()
+            print(f'Type: {suiteImport["type"]}, Name: {suiteImport["name"]}')
+            importedResource: ResourceFile = ResourceFile.from_file_system(suite.source.parent.absolute().name + '/' + suiteImport["name"])
+            for importedKeyword in importedResource.keywords:
+                print(f'Imported keyword: {importedKeyword.name}')
+                foundKeywordNames.append(importedKeyword.name)
+            
         
         
         for vertice in model['vertices']:
@@ -120,14 +147,6 @@ prepareSuite(root)
 for suite in root.suites:
 
     prepareSuite(suite)
-
-    # kw = suite.resource.keywords.create(name = 'Generated keyword', args=['${arg1}=asdf'])
-    # kw.body.create_keyword(name='Log', args=['Generated keyword', 'WARN'])
-
-
-    # for test in suite.tests:
-    #     test.body.create_keyword(name='Generated keyword')
-    #     test.body.create_keyword(name='Generated keyword', args=['qwer'])
 
 
 root.run(output='results/output.xml')

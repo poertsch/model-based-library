@@ -1,8 +1,10 @@
 *** Settings ***
-Metadata    foo                  bar
-Metadata    ModelBasedTests      model.json
-Metadata    Testing path 1       path.json
-Metadata    Testing path 2       path.json
+Resource    OpenTodos.resource
+Resource    ShowAllTodos.resource
+Metadata    foo                          bar
+Metadata    ModelBasedTests              model.json
+Metadata    Testing path 1               path.json
+Metadata    Testing path 2               path.json
 
 
 *** Test Cases ***
