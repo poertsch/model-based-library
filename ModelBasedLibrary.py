@@ -45,7 +45,7 @@ def processModelBasedSuite(suite: TestSuite, testNames, model):
         #if the keyword does not exist, generate one and log a WARNING
         for path in path_list:
             addKeywordToTestAndResources(suite, missingKeywordNames, curTest, path)
-        missingKeywordNames = []
+
 
 
 

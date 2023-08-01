@@ -16,6 +16,11 @@ Testing path 1
 Testing path 2
     Log    No operation
 
+Testing not model base test
+    Log    Not model based test
+    e_addTodo
+    Keyword 1
+
 
 *** Keywords ***
 
