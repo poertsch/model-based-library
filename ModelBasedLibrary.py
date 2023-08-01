@@ -74,9 +74,7 @@ def addKeywordToTestAndResources(suite, missingKeywordNames, curTest, path):
         missingKW.body.create_keyword(name='Log', args=['You called the automatically generated keyword ' + kw 
                                                                 + ' which is missing in the resource files', 'WARN'])
         missingKeywordNames.remove(kw)
-    # else:
-    #     print(f'Available keyword: {kw}')
-    #     print()
+    
 
 
 def extractPathList(pathName, parentPathName):
