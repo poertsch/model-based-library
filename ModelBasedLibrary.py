@@ -3,11 +3,8 @@ from robot.running.model import ResourceFile
 import json
 
 def prepareSuite(suite: TestSuite):
-    print(f'Prepare Suite: {suite.longname}')
     print()
-    for suiteImport in suite.resource.imports:
-        print(f'Import: {suiteImport}')
-    print(f'Available keywords: {suite.resource.keywords}')
+    print(f'Prepare Suite: {suite.longname}')
     print()
     isModelBased = False
     model = ''
@@ -21,10 +18,10 @@ def prepareSuite(suite: TestSuite):
             isModelBased = True
             model = fileName
     if(isModelBased):
+        print('Suite is model based')
         processModelBasedSuite(suite, testNames, model)
 
-    for childSuite in suite.suites:
-        prepareSuite(childSuite)
+    
 
 
 def processModelBasedSuite(suite: TestSuite, testNames, model):
@@ -73,11 +70,9 @@ def addKeywordToTestAndResources(suite, missingKeywordNames, curTest, path):
             
             # If keyword is missing in resource files, also add keyword
     if(missingKeywordNames.count(kw) > 0):
-        print(f'Missing keyword: {kw}')
-        print()
         missingKW = suite.resource.keywords.create(name=kw, args=kw_argNames)
         missingKW.body.create_keyword(name='Log', args=['You called the automatically generated keyword ' + kw 
-                                                                + ' which is missing in the resource files', 'INFO'])
+                                                                + ' which is missing in the resource files', 'WARN'])
         missingKeywordNames.remove(kw)
     # else:
     #     print(f'Available keyword: {kw}')
@@ -102,23 +97,19 @@ def findTestByName(suite, testName):
 
 def collectNamesForMissingKeywords(suite: TestSuite, model_list):
     missingKeywordNames = []
-    for model in model_list[0]['models']:
-        foundKeywordNames = []
-        
-        for key in suite.resource.keywords:
-            foundKeywordNames.append(key.name)
+    foundKeywordNames = []
+    for key in suite.resource.keywords:
+        foundKeywordNames.append(key.name)
 
         for suiteImport in suite.resource.imports.to_dicts():
-            print('Imports')
-            print()
-            print(f'Type: {suiteImport["type"]}, Name: {suiteImport["name"]}')
             importedResource: ResourceFile = ResourceFile.from_file_system(suite.source.parent.absolute().name + '/' + suiteImport["name"])
             for importedKeyword in importedResource.keywords:
-                print(f'Imported keyword: {importedKeyword.name}')
                 foundKeywordNames.append(importedKeyword.name)
             
-        
-        
+        print(f'Available keywords: {foundKeywordNames}')
+
+    for model in model_list[0]['models']:
+
         for vertice in model['vertices']:
             try:
                 foundKeywordNames.index(vertice['name'])
@@ -134,7 +125,9 @@ def collectNamesForMissingKeywords(suite: TestSuite, model_list):
                 
                 
         
-        missingKeywordNames = (list(dict.fromkeys(missingKeywordNames)))
+    missingKeywordNames = (list(dict.fromkeys(missingKeywordNames)))
+    print(f'Missing keywords: {missingKeywordNames}')
+
     return missingKeywordNames
 
 
