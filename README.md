@@ -10,6 +10,7 @@ Initial development is currently going on here. This Project is far away from be
 1. Draw a model with GraphWalker
 1. Generate one or multiple paths with GraphWalker CLI
 1. Create a model based test suite
+1. Run the tests
 
 ## Draw a model with GraphWalker
 
@@ -104,4 +105,12 @@ A normal test case
 
 Keyword 1
     No Operation
+```
+
+## Run the tests
+
+Copy the file `ModelBasedLibrary.py` in the root folder of your test suites and run it:
+
+```
+python ModelBasedLibrary.py
 ```
