@@ -5,6 +5,8 @@ Metadata    foo                          bar
 Metadata    ModelBasedTests              model.json
 Metadata    Testing path 1               path.json
 Metadata    Testing path 2               path_CompletedTodosDisplayed.json
+Metadata    Kaktus                       Baum
+Metadata    asfd sdaf                    something.json
 
 
 *** Test Cases ***
