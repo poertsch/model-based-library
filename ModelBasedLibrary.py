@@ -12,13 +12,15 @@ def prepareSuite(suite: TestSuite):
 
     # Extract test names and path
     for key, fileName in suite.metadata.items():
-        if(isModelBased):
-            testNames[key] = fileName
         if(key == 'ModelBasedTests'):
             isModelBased = True
             model = fileName
+    for key, fileName in suite.metadata.items():
+        if(isModelBased):
+            testNames[key] = fileName
     if(isModelBased):
         print('Suite is model based')
+        print()
         processModelBasedSuite(suite, testNames, model)
 
     
@@ -36,15 +38,19 @@ def processModelBasedSuite(suite: TestSuite, testNames, model):
         
     for testName, pathName in testNames.items():
         parentPathName = str(suite.source.parent.absolute())
-        # extract the path from the path json file
-        path_list = extractPathList(pathName, parentPathName)
 
         curTest = findTestByName(suite, testName)
 
-        #for each element in the path call the keyword
-        #if the keyword does not exist, generate one and log a WARNING
-        for path in path_list:
-            addKeywordToTestAndResources(suite, missingKeywordNames, curTest, path)
+        if(curTest != None):
+            print(f'Processing path from {pathName} for test "{testName}"')
+
+            # extract the path from the path json file
+            path_list = extractPathList(pathName, parentPathName)
+
+            #for each element in the path call the keyword
+            #if the keyword does not exist, generate one and log a WARNING
+            for path in path_list:
+                addKeywordToTestAndResources(suite, missingKeywordNames, curTest, path)
 
 
 
@@ -87,6 +93,7 @@ def extractPathList(pathName, parentPathName):
 
 
 def findTestByName(suite, testName):
+    curTest = None
     for test in suite.tests:
         if(test.name == testName):
             curTest = test
@@ -139,6 +146,9 @@ for suite in root.suites:
 
     prepareSuite(suite)
 
-
+print()
+print("Run tests....")
+print()
+print()
 root.run(output='results/output.xml')
 ResultWriter('results/output.xml').write_results(log='results/log.html', report='results/report.html')
