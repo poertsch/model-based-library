@@ -4,7 +4,7 @@ Resource    ShowAllTodos.resource
 Metadata    foo                          bar
 Metadata    ModelBasedTests              model.json
 Metadata    Testing path 1               path.json
-Metadata    Testing path 2               path.json
+Metadata    Testing path 2               path_CompletedTodosDisplayed.json
 
 
 *** Test Cases ***
