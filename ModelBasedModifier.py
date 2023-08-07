@@ -1,6 +1,12 @@
 from robot.api import TestSuite, ResultWriter
+from robot.api import SuiteVisitor
+from robot.model import TestSuite
 from robot.running.model import ResourceFile
 import json
+
+class ModelBasedModifier(SuiteVisitor):
+    def start_suite(self, suite: TestSuite) -> bool | None:
+        prepareSuite(suite)
 
 def prepareSuite(suite: TestSuite):
     print()
@@ -135,20 +141,3 @@ def collectNamesForMissingKeywords(suite: TestSuite, model_list):
 
     return missingKeywordNames
 
-
-############### run the suite #####################
-
-root = TestSuite.from_file_system('tests/')
-
-prepareSuite(root)
-
-for suite in root.suites:
-
-    prepareSuite(suite)
-
-print()
-print("Run tests....")
-print()
-print()
-root.run(output='results/output.xml')
-ResultWriter('results/output.xml').write_results(log='results/log.html', report='results/report.html')
