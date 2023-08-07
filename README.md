@@ -109,8 +109,5 @@ Keyword 1
 
 ## Run the tests
 
-Copy the file `ModelBasedLibrary.py` in the root folder of your test suites and run it:
+Copy the file `ModelBasedModifier.py` in the root folder of your test suites and run robot framework with `--prerunModifier ./ModelBasedModifier.py`.
 
-```
-python ModelBasedLibrary.py
-```
