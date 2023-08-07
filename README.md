@@ -7,6 +7,8 @@ Initial development is currently going on here. This Project is far away from be
 
 # User Guide
 
+You have to complete the following steps to run a model base test.
+
 1. Draw a model with GraphWalker
 1. Generate one or multiple paths with GraphWalker CLI
 1. Create a model based test suite
@@ -14,11 +16,12 @@ Initial development is currently going on here. This Project is far away from be
 
 ## Draw a model with GraphWalker
 
-TBD
+In order to run a model based test you need to draw a model. Model based Library supports GraphWalker models.
+See https://graphwalker.github.io/ for details how to draw a model.
 
 ## Generate one or multiple paths with GraphWalker CLI
 
-TBD
+For the model you created you need to generate one or multiple paths. You can generate a path with the GraphWalker CLI (see https://graphwalker.github.io/). Use the command `java -jar graphwalker-cli-4.3.1.jar GLOBAL_OPTIONS offline OPTIONS -m <model-file> "GENERATOR(STOP_CONDITION)" >> path.json`. See the GraphWalker Wiki for details: https://github.com/GraphWalker/graphwalker-project/wiki/Offline.
 
 ## Create a model based test suite
 
