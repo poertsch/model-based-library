@@ -21,10 +21,9 @@ def prepareSuite(suite: TestSuite):
         if(key == 'ModelBasedTests'):
             isModelBased = True
             model = fileName
-    for key, fileName in suite.metadata.items():
-        if(isModelBased):
-            testNames[key] = fileName
     if(isModelBased):
+        for key, fileName in suite.metadata.items():
+            testNames[key] = fileName
         print('Suite is model based')
         print()
         processModelBasedSuite(suite, testNames, model)
@@ -103,6 +102,7 @@ def findTestByName(suite, testName):
     for test in suite.tests:
         if(test.name == testName):
             curTest = test
+            break
     return curTest
 
 
