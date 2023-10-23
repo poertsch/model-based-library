@@ -21,9 +21,10 @@ def prepareSuite(suite: TestSuite):
         if(key == 'ModelBasedTests'):
             isModelBased = True
             model = fileName
-    if(isModelBased):
-        for key, fileName in suite.metadata.items():
+    for key, fileName in suite.metadata.items():
+        if(isModelBased):
             testNames[key] = fileName
+    if(isModelBased):
         print('Suite is model based')
         print()
         processModelBasedSuite(suite, testNames, model)
@@ -102,7 +103,6 @@ def findTestByName(suite, testName):
     for test in suite.tests:
         if(test.name == testName):
             curTest = test
-            break
     return curTest
 
 
@@ -112,12 +112,14 @@ def collectNamesForMissingKeywords(suite: TestSuite, model_list):
     for key in suite.resource.keywords:
         foundKeywordNames.append(key.name)
 
-        for suiteImport in suite.resource.imports.to_dicts():
-            importedResource: ResourceFile = ResourceFile.from_file_system(suite.source.parent.absolute().name + '/' + suiteImport["name"])
+    for suiteImport in suite.resource.imports.to_dicts():
+        print(suiteImport)
+        if(suiteImport["type"] == "RESOURCE"):
+            importedResource: ResourceFile = ResourceFile.from_file_system(f'{suite.source.parent.absolute()}/{suiteImport["name"]}')
             for importedKeyword in importedResource.keywords:
                 foundKeywordNames.append(importedKeyword.name)
-            
-        print(f'Available keywords: {foundKeywordNames}')
+        
+    print(f'Available keywords: {foundKeywordNames}')
 
     for model in model_list[0]['models']:
 
