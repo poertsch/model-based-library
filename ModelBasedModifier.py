@@ -1,7 +1,10 @@
+# License https://github.com/poertsch/model-based-library?tab=GPL-3.0-1-ov-file#readme
+# See https://github.com/poertsch/model-based-library
+
 from robot.api import TestSuite, ResultWriter
 from robot.api import SuiteVisitor
 from robot.model import TestSuite
-from robot.running.model import ResourceFile
+from robot.running.model import TestSuite as RunningTestSuite
 import json
 
 class ModelBasedModifier(SuiteVisitor):
@@ -29,7 +32,7 @@ def prepareSuite(suite: TestSuite):
         print()
         processModelBasedSuite(suite, testNames, model)
 
-    
+
 
 
 def processModelBasedSuite(suite: TestSuite, testNames, model):
@@ -39,9 +42,9 @@ def processModelBasedSuite(suite: TestSuite, testNames, model):
         # read each line as a json object
         # append the json object to the list
         model_list = [json.loads(line) for line in f]
-    
-    missingKeywordNames = collectNamesForMissingKeywords(suite, model_list)
-        
+
+    # missingKeywordNames = collectNamesForMissingKeywords(suite, model_list)
+
     for testName, pathName in testNames.items():
         parentPathName = str(suite.source.parent.absolute())
 
@@ -56,37 +59,19 @@ def processModelBasedSuite(suite: TestSuite, testNames, model):
             #for each element in the path call the keyword
             #if the keyword does not exist, generate one and log a WARNING
             for path in path_list:
-                addKeywordToTestAndResources(suite, missingKeywordNames, curTest, path)
+                addKeywordToTestAndResources(suite, [], curTest, path)
 
 
 
 
 def addKeywordToTestAndResources(suite, missingKeywordNames, curTest, path):
     kw = path['currentElementName']
-    dataList = path['data']
-    kw_args = []
-    kw_argNames = []
 
-            # Add Keyword with Arguments to Test Case
-    for data in dataList:
-                # each data is a dictionary
-                # get the key and value of the dictionary
-        for key, value in data.items():
-            if key != 'JsonContext':
-                        # print(key)
-                        # print(value)
-                kw_args.append(f'{key}={value}')
-                kw_argNames.append(f'${{{key}}}')
+    # curTest.body.create_keyword(name=kw, args=kw_args)
+    curTest.body.create_keyword(name=kw)
+    print(f'Keyword added: {kw}')
 
-    curTest.body.create_keyword(name=kw, args=kw_args)
-            
-            # If keyword is missing in resource files, also add keyword
-    if(missingKeywordNames.count(kw) > 0):
-        missingKW = suite.resource.keywords.create(name=kw, args=kw_argNames)
-        missingKW.body.create_keyword(name='Log', args=['You called the automatically generated keyword ' + kw 
-                                                                + ' which is missing in the resource files', 'WARN'])
-        missingKeywordNames.remove(kw)
-    
+
 
 
 def extractPathList(pathName, parentPathName):
@@ -105,41 +90,4 @@ def findTestByName(suite, testName):
             curTest = test
     return curTest
 
-
-def collectNamesForMissingKeywords(suite: TestSuite, model_list):
-    missingKeywordNames = []
-    foundKeywordNames = []
-    for key in suite.resource.keywords:
-        foundKeywordNames.append(key.name)
-
-    for suiteImport in suite.resource.imports.to_dicts():
-        print(suiteImport)
-        if(suiteImport["type"] == "RESOURCE"):
-            importedResource: ResourceFile = ResourceFile.from_file_system(f'{suite.source.parent.absolute()}/{suiteImport["name"]}')
-            for importedKeyword in importedResource.keywords:
-                foundKeywordNames.append(importedKeyword.name)
-        
-    print(f'Available keywords: {foundKeywordNames}')
-
-    for model in model_list[0]['models']:
-
-        for vertice in model['vertices']:
-            try:
-                foundKeywordNames.index(vertice['name'])
-            except ValueError:
-                missingKeywordNames.append(vertice['name'])
-                
-                
-        for edge in model['edges']:
-            try:
-                foundKeywordNames.index(edge['name'])
-            except ValueError:
-                missingKeywordNames.append(edge['name'])
-                
-                
-        
-    missingKeywordNames = (list(dict.fromkeys(missingKeywordNames)))
-    print(f'Missing keywords: {missingKeywordNames}')
-
-    return missingKeywordNames
 
