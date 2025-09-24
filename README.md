@@ -3,7 +3,8 @@ Model based testing with Robot Framework based on GraphWalker models
 
 # Status of this repository
 
-Initial development is currently going on here. This Project is far away from being usable for anybody.
+Currently it has a status of a release candidate. But it can already be used
+like described below.
 
 # User Guide
 
@@ -38,15 +39,12 @@ Metadata    ModelBasedTests    model.json
 ```
 
 Based on this metadata the test suite is marked as model based and the
-graph in `model.json` is used to check if all vertices and edges have
-coresponding keywords in the suite. Each edge and vertex in the model
+graph in `model.json`. Each edge and vertex in the model
 needs to have a keyword with the same name as the edge or vertex. You 
 can define the keywords in the Keywords section or in resource files.
 If you use resource files you need to import them in the Settings section
 like you do with normal test suites. If during test execution a keyword is
-missing for a vertex or edge, an empty keyword will be generated. The name
-and the args for the missing keyword are logged with a warning message and
-can be used to add the missing keyword to the test suite.
+missing for a vertex or edge, you will get a runtime error.
 
 To test a given path for the defined model you need to add the following
 metadata:
