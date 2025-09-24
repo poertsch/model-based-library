@@ -3,7 +3,8 @@ Model based testing with Robot Framework based on GraphWalker models
 
 # Status of this repository
 
-Initial development is currently going on here. This Project is far away from being usable for anybody.
+Currently it has a status of a release candidate. But it can already be used
+like described below.
 
 # User Guide
 
