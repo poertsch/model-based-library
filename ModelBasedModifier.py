@@ -41,7 +41,16 @@ def processModelBasedSuite(suite: TestSuite, testNames, model):
         # read the file line by line
         # read each line as a json object
         # append the json object to the list
-        model_list = [json.loads(line) for line in f]
+        # model_list = [json.loads(line) for line in f]
+        model = f.read()
+        if(suite.has_setup):
+            print(f'Suite setup: {suite.setup.name}')
+            print(f'Suite setup args: {suite.setup.args}')
+            # TODO: create new keywork, add old setup to new keyword and add ${MODEL} to new keyword and set setup to new keyword
+        else:
+            print('Suite has no setup')
+
+
 
     # missingKeywordNames = collectNamesForMissingKeywords(suite, model_list)
 
@@ -50,7 +59,8 @@ def processModelBasedSuite(suite: TestSuite, testNames, model):
 
         curTest = findTestByName(suite, testName)
 
-        if(curTest != None):
+        if(curTest and pathName):
+
             print(f'Processing path from {pathName} for test "{testName}"')
 
             # extract the path from the path json file
@@ -66,10 +76,20 @@ def processModelBasedSuite(suite: TestSuite, testNames, model):
 
 def addKeywordToTestAndResources(suite, missingKeywordNames, curTest, path):
     kw = path['currentElementName']
+    kw_args = []
+    dataList = []
 
-    # curTest.body.create_keyword(name=kw, args=kw_args)
-    curTest.body.create_keyword(name=kw)
-    print(f'Keyword added: {kw}')
+    if 'data' in path:
+        dataList = path['data']
+
+    for data in dataList:
+        for key, value in data.items():
+            if key != 'JsonContext':
+                kw_args.append(f'{key}={value}')
+
+    curTest.body.create_keyword(name=kw, args=kw_args)
+    # curTest.body.create_keyword(name=kw)
+    print(f'Keyword added: {kw}({kw_args})')
 
 
 

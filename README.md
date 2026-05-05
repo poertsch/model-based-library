@@ -17,7 +17,7 @@ You have to complete the following steps to run a model base test.
 
 ## Draw a model with GraphWalker
 
-In order to run a model based test you need to draw a model. Model based Library supports GraphWalker models.
+In order to run a model based test you need to draw a model. Model based Library supports GraphWalker models (version 4.3.3).
 See https://graphwalker.github.io/ for details how to draw a model.
 
 ## Generate one or multiple paths with GraphWalker CLI
